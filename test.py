@@ -1,18 +1,10 @@
-import urllib2
-import json
-from sys import argv
+from flask import Flask
 
-script,link = argv
+app = Flask(__name__)
 
-print link
+@app.route("/")
+def hello():
+    return "Hello from Dockerized Flask App!!"
 
-link = link.split('/') 
-repo = link[-1]
-user = link[-2]
-
-a = urllib2.urlopen("https://api.github.com/repos/%s/%s/contents" % (user,repo)).read()
-# print a
-a = json.loads(a) 
-# print a
-for j in a:
-    print j['name']
+if __name__ == "__main__":
+    app.run(debug=True,host='0.0.0.0')
