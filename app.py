@@ -23,7 +23,7 @@ def getYmlContent(environment):
         request = urllib2.Request(
             "https://api.github.com/repos/%s/%s/contents/%s-config.yml" % (user, repo, environment))
         request.add_header('Accept', 'application/vnd.github.VERSION.raw')
-        return urllib2.urlopen(request).read().strip()
+        return urllib2.urlopen(request).read()
     except:
         return "File not found!"
 
@@ -41,14 +41,12 @@ def hello():
 
 @app.route("/v1/<environment>-config.yml")
 def configYml(environment):
-    return getYmlContent(environment)
+    return  getYmlContent(environment)
 
 
 @app.route("/v1/<environment>-config.json")
 def configJson(environment):
     return generateJSON(getYmlContent(environment))
-
-
 
 
 
