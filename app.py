@@ -1,11 +1,9 @@
-import urllib2
 from sys import argv
 from flask import Response
 from flask import Flask
 import yaml
 import json
-import sys
-# from github import Github
+from github import Github
 
 script, link = argv
 
@@ -18,12 +16,13 @@ user = link[-2]
 
 app = Flask(__name__)
 
+
 def getYmlContent(environment):
     try:
-        request = urllib2.Request(
-            "https://api.github.com/repos/%s/%s/contents/%s-config.yml" % (user, repo, environment))
-        request.add_header('Accept', 'application/vnd.github.VERSION.raw')
-        return urllib2.urlopen(request).read()
+        git = Github().get_user(user).get_repo(repo)
+        content = git.get_file_contents(environment + "-config.yml").content.decode(
+            git.get_contents(environment + "-config.yml").encoding)
+        return content
     except:
         return "File not found!"
 
@@ -34,6 +33,7 @@ def generateJSON(raw):
     except:
         return "Error"
 
+
 @app.route("/")
 def hello():
     return "Hello from Dockerized Flask App!!"
@@ -41,13 +41,12 @@ def hello():
 
 @app.route("/v1/<environment>-config.yml")
 def configYml(environment):
-    return  getYmlContent(environment)
+    return getYmlContent(environment)
 
 
 @app.route("/v1/<environment>-config.json")
 def configJson(environment):
     return generateJSON(getYmlContent(environment))
-
 
 
 if __name__ == "__main__":
